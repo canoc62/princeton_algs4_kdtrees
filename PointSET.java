@@ -2,6 +2,7 @@ import java.util.TreeSet;
 import java.util.Iterator;
 import java.util.Comparator;
 import java.util.ArrayList;
+import java.util.Scanner;
 import edu.princeton.cs.algs4.*;
 
 public class PointSET {
@@ -22,25 +23,29 @@ public class PointSET {
     }
     
     public void insert(Point2D p) {
+        checkForNull(p);
         pointTreeSet.add(p);
     }
     
     public boolean contains(Point2D p) {
+        checkForNull(p);
         return pointTreeSet.contains(p);
     }
     
     public void draw() {
-        //Iterator<Point2D> pointIterator = pointTreeSet.iterator();
-        while (pointIterator().hasNext()) {
-            pointIterator().next().draw();
+        Iterator<Point2D> pointIterator = pointTreeSet.iterator();
+        while (pointIterator.hasNext()) {
+            pointIterator.next().draw();
         }
     }
     
     public Iterable<Point2D> range(RectHV rect) {
-        //Iterator<Point2D> pointIterator = pointTreeSet.iterator();
+        checkForNull(rect);
+        
+        Iterator<Point2D> pointIterator = pointTreeSet.iterator();
         rangeSet = new TreeSet<Point2D>();
-        while (pointIterator().hasNext()) {
-            Point2D point = pointIterator().next();
+        while (pointIterator.hasNext()) {
+            Point2D point = pointIterator.next();
             if (rect.contains(point)) {
                 rangeSet.add(point);
             }
@@ -49,26 +54,56 @@ public class PointSET {
     }
     
     public Point2D nearest(Point2D p) {
+        checkForNull(p);
+        
         if (this.isEmpty()) return null;
         
-        TreeSet<Point2D> byDistanceSet = new TreeSet<Point2D>(p.distanceToOrder());
-        while (pointIterator().hasNext()) {
-            byDistanceSet.add(pointIterator().next());
+        Point2D closest = null;
+        Point2D next;// = null;
+        Iterator<Point2D> it = pointTreeSet.iterator();
+        while (it.hasNext()) {
+            next = it.next();
+            //System.out.println(next);
+            if (closest == null || next.distanceSquaredTo(p) < closest.distanceSquaredTo(p)) {
+                closest = next;
+                //System.out.println("hello");
+            }
+            //System.out.println("hello2");
+                                           
         }
-                                                                        
-        //ArrayList<Point2D> byDistanceList = new ArrayList<Point2D>(treeSet
-        //Point2D[] byDistanceArr = pointTreeSet.toArray(new Point2D[this.size()]);
-        //return byDistanceArr[1];
-        return byDistanceSet.last();
+        return closest;
     }
     
-    private Iterator<Point2D> pointIterator() {
-        return pointTreeSet.iterator();
+    private void checkForNull(Object item) {
+        if (item == null) { 
+            throw new NullPointerException();
+        }
     }
     
     //Unit testing
     public static void main(String[] args) {
         
+        In in = new In(args[0]);
+        PointSET setOfPoints = new PointSET();
+        
+        while (!in.isEmpty()) {
+            double x = in.readDouble();
+            double y = in.readDouble();
+            Point2D p = new Point2D(x, y);
+            
+            Point2D point = new Point2D(x,y);
+            setOfPoints.insert(point);
+           
+        }
+        
+        
+        StdDraw.clear();
+        StdDraw.setPenColor(StdDraw.BLACK);
+        StdDraw.setPenRadius(.01);
+        setOfPoints.draw();
+        
+        //System.out.println(setOfPoints.isEmpty());
+        //System.out.println(setOfPoints.nearest(testPoint));                      
     }
     
 }
