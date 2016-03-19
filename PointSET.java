@@ -34,6 +34,7 @@ public class PointSET {
     
     public void draw() {
         Iterator<Point2D> pointIterator = pointTreeSet.iterator();
+        
         while (pointIterator.hasNext()) {
             pointIterator.next().draw();
         }
@@ -44,11 +45,13 @@ public class PointSET {
         
         Iterator<Point2D> pointIterator = pointTreeSet.iterator();
         rangeSet = new TreeSet<Point2D>();
+        
         while (pointIterator.hasNext()) {
             Point2D point = pointIterator.next();
             if (rect.contains(point)) {
                 rangeSet.add(point);
             }
+            //point = null;
         }
         return rangeSet;
     }
@@ -59,21 +62,20 @@ public class PointSET {
         if (this.isEmpty()) return null;
         
         Point2D closest = null;
-        Point2D next;// = null;
-        Iterator<Point2D> it = pointTreeSet.iterator();
-        while (it.hasNext()) {
-            next = it.next();
-            //System.out.println(next);
+        Point2D next;
+        Iterator<Point2D> pointIterator = pointTreeSet.iterator();
+        
+        while (pointIterator.hasNext()) {
+            next = pointIterator.next();
+
             if (closest == null || next.distanceSquaredTo(p) < closest.distanceSquaredTo(p)) {
                 closest = next;
-                //System.out.println("hello");
             }
-            //System.out.println("hello2");
                                            
         }
         return closest;
     }
-    
+   
     private void checkForNull(Object item) {
         if (item == null) { 
             throw new NullPointerException();
@@ -90,20 +92,20 @@ public class PointSET {
             double x = in.readDouble();
             double y = in.readDouble();
             Point2D p = new Point2D(x, y);
-            
+            //System.out.println(p);
             Point2D point = new Point2D(x,y);
             setOfPoints.insert(point);
            
         }
         
-        
+        Point2D testPoint = new Point2D(.81,.30);
         StdDraw.clear();
         StdDraw.setPenColor(StdDraw.BLACK);
         StdDraw.setPenRadius(.01);
         setOfPoints.draw();
         
         //System.out.println(setOfPoints.isEmpty());
-        //System.out.println(setOfPoints.nearest(testPoint));                      
+        System.out.println("nearest point: " + setOfPoints.nearest(testPoint));                      
     }
     
 }
