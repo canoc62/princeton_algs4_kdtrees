@@ -77,7 +77,7 @@ public class KdTree {
     public boolean contains(Point2D p) {
         if (p == null) throw new NullPointerException();
         level = 0;
-        return contains(p);
+        return contains(root, p, level) != null;
     }
     
     private Point2D contains(Node n, Point2D p, int level) {
