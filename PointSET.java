@@ -23,12 +23,13 @@ public class PointSET {
     }
     
     public void insert(Point2D p) {
-        checkForNull(p);
+        if (p == null) throw new NullPointerException();
         pointTreeSet.add(p);
     }
     
     public boolean contains(Point2D p) {
-        checkForNull(p);
+        if (p == null) throw new NullPointerException();
+        
         return pointTreeSet.contains(p);
     }
     
@@ -41,7 +42,7 @@ public class PointSET {
     }
     
     public Iterable<Point2D> range(RectHV rect) {
-        checkForNull(rect);
+        if (rect == null) throw new NullPointerException();
         
         Iterator<Point2D> pointIterator = pointTreeSet.iterator();
         rangeSet = new TreeSet<Point2D>();
@@ -57,7 +58,7 @@ public class PointSET {
     }
     
     public Point2D nearest(Point2D p) {
-        checkForNull(p);
+        if (p == null) throw new NullPointerException();
         
         if (this.isEmpty()) return null;
         
@@ -74,12 +75,6 @@ public class PointSET {
                                            
         }
         return closest;
-    }
-   
-    private void checkForNull(Object item) {
-        if (item == null) { 
-            throw new NullPointerException();
-        }
     }
     
     //Unit testing
