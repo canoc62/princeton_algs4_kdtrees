@@ -9,7 +9,6 @@ public class KdTree {
     private static final double ymax = 1.0;
     private int level;
     private int size;
-    //private ArrayList<Point2D> range;
     private Node root;
     private static double queryToClosest = 0;
     
@@ -180,12 +179,10 @@ public class KdTree {
     
     public Point2D nearest(Point2D p) {
         Point2D closest = null;
-        //queryToClosest = p.distanceSquaredTo(closest);
         return nearest(root, p, closest); 
     }
     
     private Point2D nearest(Node n, Point2D queryP, Point2D closest) {
-        //queryToClosest = currentClosest;
         
         if (n != null) {
             if (closest == null) {
@@ -193,34 +190,24 @@ public class KdTree {
                 queryToClosest = queryP.distanceSquaredTo(closest);
             }
             
-            //double queryToClosest = queryP.distanceSquaredTo(closest);
             double queryToRect = n.rect.distanceSquaredTo(queryP); 
-             if (queryToClosest >= queryToRect) {//n.rect.distanceSquaredTo(queryP)) {
-            if (queryP.distanceSquaredTo(n.p) < queryToClosest) {
-                closest = n.p;
-                queryToClosest = queryP.distanceSquaredTo(closest);
-            }
+            double queryToNodePoint = queryP.distanceSquaredTo(n.p);
             
-            //double queryToRect = n.rect.distanceSquaredTo(queryP);
-            
-            if (n.leftBottom != null && n.leftBottom.rect.contains(queryP)) {
-                
-                closest = nearest(n.leftBottom, queryP, closest);
-                //if (queryToClosest > queryToRect) {
-                    closest = nearest(n.rightTop, queryP, closest);
-                //}
-            }
-            else {
-                //if (n.rightTop != null) {
-                
-                closest = nearest(n.rightTop, queryP, closest);
-               // if (queryToClosest > queryToRect) {
+            if (queryToClosest >= queryToRect) {
+                if (queryToNodePoint < queryToClosest) {
+                    closest = n.p;
+                    queryToClosest = queryP.distanceSquaredTo(closest);
+                }
+        
+                if (n.leftBottom != null && n.leftBottom.rect.contains(queryP)) {
                     closest = nearest(n.leftBottom, queryP, closest);
-                //}
-                //}
+                    closest = nearest(n.rightTop, queryP, closest);
+                }
+                else {
+                    closest = nearest(n.rightTop, queryP, closest);
+                    closest = nearest(n.leftBottom, queryP, closest);
+                }
             }
-           }
-            
         }
         
         return closest;
