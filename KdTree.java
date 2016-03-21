@@ -3,14 +3,15 @@ import edu.princeton.cs.algs4.*;
 
 public class KdTree {
     
-    private final static double xmin = 0.0;
-    private final static double xmax = 1.0;
-    private final static double ymin = 0.0;
-    private final static double ymax = 1.0;
+    private static final double xmin = 0.0;
+    private static final double xmax = 1.0;
+    private static final double ymin = 0.0;
+    private static final double ymax = 1.0;
     private int level;
     private int size;
-    private ArrayList<Point2D> range;
+    //private ArrayList<Point2D> range;
     private Node root;
+    private static double queryToClosest = 0;
     
     private static class Node {
         private Point2D p;
@@ -58,33 +59,36 @@ public class KdTree {
         }
         
         int cmp;
+        double nodePointX = n.p.x();
+        double nodePointY = n.p.y();
+        
         if (level % 2 == 1) {
-            cmp = comparePoints(n.p.x(), p.x());
+            cmp = comparePoints(nodePointX, p.x());
             if (cmp == 0) {
-                /*cmp = -1;// go right subtree? //*/cmp = comparePoints(n.p.y(), p.y());
+                cmp = comparePoints(nodePointY, p.y());
             }
         }
         else {
-            cmp = comparePoints(n.p.y(), p.y());
+            cmp = comparePoints(nodePointY, p.y());
             if (cmp == 0) {
-                /*cmp = -1; //go right subtree? //*/cmp = comparePoints(n.p.x(), p.x());
+                cmp = comparePoints(nodePointX, p.x());
             }
         }
         
         if (cmp > 0) {
             if (level % 2 == 1) {
-                n.leftBottom = insert(n.leftBottom, p, xmin, ymin, n.p.x(), ymax, level +1);
+                n.leftBottom = insert(n.leftBottom, p, xmin, ymin, nodePointX, ymax, level +1);
             }
             else {
-                n.leftBottom = insert(n.leftBottom, p, xmin, ymin, xmax, n.p.y(), level +1);
+                n.leftBottom = insert(n.leftBottom, p, xmin, ymin, xmax, nodePointY, level +1);
             }
         } 
         else if (cmp < 0) {
             if (level % 2 == 1) {
-                n.rightTop = insert(n.rightTop, p, n.p.x(), ymin, xmax, ymax, level + 1);
+                n.rightTop = insert(n.rightTop, p, nodePointX, ymin, xmax, ymax, level + 1);
             }
             else {
-                n.rightTop = insert(n.rightTop, p, xmin, n.p.y(), xmax, ymax, level + 1);
+                n.rightTop = insert(n.rightTop, p, xmin, nodePointY, xmax, ymax, level + 1);
             }
         }
       
@@ -158,8 +162,8 @@ public class KdTree {
     public Iterable<Point2D> range(RectHV rect) {
         if (rect == null) throw new NullPointerException();
         
-        range = new ArrayList<Point2D>();
-        intersects(root, rect, range); //points; // to compile
+        ArrayList<Point2D> range = new ArrayList<Point2D>();
+        intersects(root, rect, range); 
         return range;
     }
     
@@ -176,51 +180,53 @@ public class KdTree {
     
     public Point2D nearest(Point2D p) {
         Point2D closest = null;
-        return nearest(root, p, closest); //to compile
+        //queryToClosest = p.distanceSquaredTo(closest);
+        return nearest(root, p, closest); 
     }
     
     private Point2D nearest(Node n, Point2D queryP, Point2D closest) {
+        //queryToClosest = currentClosest;
+        
         if (n != null) {
-            if (closest == null) closest = n.p;
-            
-            double queryToClosest = queryP.distanceSquaredTo(closest);
-             
-            if (queryToClosest >= n.rect.distanceSquaredTo(queryP)) {//>=
-                if (queryP.distanceSquaredTo(n.p) < queryToClosest) {
-                    closest = n.p;
-                }
+            if (closest == null) {
+                closest = n.p;
+                queryToClosest = queryP.distanceSquaredTo(closest);
             }
+            
+            //double queryToClosest = queryP.distanceSquaredTo(closest);
+            double queryToRect = n.rect.distanceSquaredTo(queryP); 
+             if (queryToClosest >= queryToRect) {//n.rect.distanceSquaredTo(queryP)) {
+            if (queryP.distanceSquaredTo(n.p) < queryToClosest) {
+                closest = n.p;
+                queryToClosest = queryP.distanceSquaredTo(closest);
+            }
+            
+            //double queryToRect = n.rect.distanceSquaredTo(queryP);
             
             if (n.leftBottom != null && n.leftBottom.rect.contains(queryP)) {
-               
-                closest = nearest(n.leftBottom, queryP, closest);
-                closest = nearest(n.rightTop, queryP, closest);
-            }
-            else {
-                if (n.rightTop != null) {
-                  
-                    closest = nearest(n.rightTop, queryP, closest);
-                    closest = nearest(n.leftBottom, queryP, closest);
-                }
-            }
                 
-        }
-        /*else {
-            if (n != null) closest = n.p;
-           
-            if (n.leftBottom != null && n.leftBottom.rect.contains(queryP)) {
-                 closest = nearest(n.leftBottom, queryP, closest);
-                 closest = nearest(n.rightTop, queryP, closest);
+                closest = nearest(n.leftBottom, queryP, closest);
+                //if (queryToClosest > queryToRect) {
+                    closest = nearest(n.rightTop, queryP, closest);
+                //}
             }
             else {
-                 closest = nearest(n.rightTop, queryP, closest);
-                 closest = nearest(n.leftBottom, queryP, closest);
+                //if (n.rightTop != null) {
+                
+                closest = nearest(n.rightTop, queryP, closest);
+               // if (queryToClosest > queryToRect) {
+                    closest = nearest(n.leftBottom, queryP, closest);
+                //}
+                //}
             }
-        }*/
+           }
+            
+        }
         
         return closest;
     }
     
+    //Unit tests
     public static void main(String[] args) {
       
         In in = new In(args[0]);
