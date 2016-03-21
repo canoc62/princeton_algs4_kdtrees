@@ -35,6 +35,8 @@ public class PointSET {
     
     public void draw() {
         Iterator<Point2D> pointIterator = pointTreeSet.iterator();
+        StdDraw.setPenColor(StdDraw.BLACK);
+        StdDraw.setPenRadius(.01);
         
         while (pointIterator.hasNext()) {
             pointIterator.next().draw();
